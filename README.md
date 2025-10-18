@@ -21,6 +21,8 @@ Flutter ile geliştirilmiş, kullanıcının konumunu izleyen ve her 100 metreli
 - **Geocoding**: Adres bilgisi alma
 - **Permission Handler**: İzin yönetimi
 - **SharedPreferences**: Veri kalıcılığı
+- **Flutter Bloc (Cubit)**: State management
+- **Equatable**: Value equality
 
 ## 📦 Kurulum
 
@@ -57,6 +59,9 @@ flutter run
 ```
 lib/
 ├── main.dart                          # Ana uygulama giriş noktası
+├── cubit/                             # State management (Cubit)
+│   ├── location_cubit.dart           # Location state business logic
+│   └── location_state.dart           # Location state definitions
 ├── models/
 │   └── location_marker.dart          # Konum marker model sınıfı
 ├── services/
@@ -91,6 +96,18 @@ lib/
 - **TrackingControlCard**: Takip kontrolü için card widget
 - **LocationInfoDialog**: Konum detaylarını gösteren dialog
 - **ConfirmationDialog**: Genel amaçlı onay dialog'u
+
+### State Management (Cubit)
+- **LocationCubit**: İş mantığını yöneten Cubit sınıfı
+- **LocationState**: Uygulama durumlarını tanımlayan state sınıfları
+  - LocationInitial: Başlangıç durumu
+  - LocationLoading: Yükleme durumu
+  - LocationLoaded: Veri yüklenmiş durumu
+  - LocationError: Hata durumu
+  - LocationPermissionDenied: İzin reddedildi durumu
+  - MarkerAddressLoading: Adres yükleniyor durumu
+- Reactive UI: BlocConsumer ile otomatik UI güncellemeleri
+- Separation of Concerns: İş mantığı ve UI'ın ayrılması
 
 ### Kullanıcı Arayüzü
 - Google Maps entegrasyonu
