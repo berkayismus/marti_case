@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marti_case/core/app_theme.dart';
 
 import 'cubit/location_cubit.dart';
 import 'screens/map_screen.dart';
@@ -14,15 +15,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Marti Case - Konum Takibi',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        useMaterial3: true,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
-          elevation: 2,
-        ),
-      ),
+
+      theme: AppTheme.theme,
       home: BlocProvider(
         create: (context) => LocationCubit()..initialize(),
         child: const MapScreen(),
