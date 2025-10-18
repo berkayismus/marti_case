@@ -23,10 +23,7 @@ class TrackingControlCard extends StatelessWidget {
           children: [
             Text(
               'Toplam Konum: $markerCount',
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             SizedBox(

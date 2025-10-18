@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/location_marker.dart';
 import '../utils/date_formatter.dart';
 
@@ -29,10 +30,7 @@ class LocationInfoDialog extends StatelessWidget {
           const SizedBox(height: 12),
           const Divider(),
           const SizedBox(height: 8),
-          const Text(
-            'Adres:',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          const Text('Adres:', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           Text(address ?? 'Adres yükleniyor...'),
         ],

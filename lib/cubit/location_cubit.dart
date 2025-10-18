@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../models/location_marker.dart';
 import '../services/location_service.dart';
 import '../services/storage_service.dart';
@@ -13,9 +14,9 @@ class LocationCubit extends Cubit<LocationState> {
   LocationCubit({
     LocationService? locationService,
     StorageService? storageService,
-  })  : _locationService = locationService ?? LocationService(),
-        _storageService = storageService ?? StorageService(),
-        super(const LocationInitial());
+  }) : _locationService = locationService ?? LocationService(),
+       _storageService = storageService ?? StorageService(),
+       super(const LocationInitial());
 
   Future<void> initialize() async {
     emit(const LocationLoading());
@@ -33,11 +34,13 @@ class LocationCubit extends Cubit<LocationState> {
       // Create initial map markers
       final mapMarkers = _createMapMarkers(savedMarkers);
 
-      emit(LocationLoaded(
-        markers: savedMarkers,
-        mapMarkers: mapMarkers,
-        isTracking: false,
-      ));
+      emit(
+        LocationLoaded(
+          markers: savedMarkers,
+          mapMarkers: mapMarkers,
+          isTracking: false,
+        ),
+      );
     } catch (e) {
       emit(LocationError('Başlatma hatası: $e'));
     }
@@ -74,10 +77,12 @@ class LocationCubit extends Cubit<LocationState> {
     // Update map markers
     final mapMarkers = _createMapMarkers(_locationService.markers);
 
-    emit(currentState.copyWith(
-      markers: List.from(_locationService.markers),
-      mapMarkers: mapMarkers,
-    ));
+    emit(
+      currentState.copyWith(
+        markers: List.from(_locationService.markers),
+        mapMarkers: mapMarkers,
+      ),
+    );
   }
 
   Future<void> startTracking() async {
@@ -121,11 +126,7 @@ class LocationCubit extends Cubit<LocationState> {
     _locationService.clearMarkers();
     await _storageService.clearMarkers();
 
-    emit(const LocationLoaded(
-      markers: [],
-      mapMarkers: {},
-      isTracking: false,
-    ));
+    emit(const LocationLoaded(markers: [], mapMarkers: {}, isTracking: false));
   }
 
   Future<void> loadMarkerAddress(int index) async {
@@ -138,20 +139,24 @@ class LocationCubit extends Cubit<LocationState> {
     final marker = markers[index];
 
     // Always emit MarkerAddressLoading to show dialog
-    emit(MarkerAddressLoading(
-      markerIndex: index,
-      markers: currentState.markers,
-      mapMarkers: currentState.mapMarkers,
-      isTracking: currentState.isTracking,
-    ));
-
-    // If address already loaded, just re-emit loaded state
-    if (marker.address != null) {
-      emit(LocationLoaded(
+    emit(
+      MarkerAddressLoading(
+        markerIndex: index,
         markers: currentState.markers,
         mapMarkers: currentState.mapMarkers,
         isTracking: currentState.isTracking,
-      ));
+      ),
+    );
+
+    // If address already loaded, just re-emit loaded state
+    if (marker.address != null) {
+      emit(
+        LocationLoaded(
+          markers: currentState.markers,
+          mapMarkers: currentState.mapMarkers,
+          isTracking: currentState.isTracking,
+        ),
+      );
       return;
     }
 
@@ -181,11 +186,13 @@ class LocationCubit extends Cubit<LocationState> {
         // Update map markers
         final mapMarkers = _createMapMarkers(updatedMarkers);
 
-        emit(LocationLoaded(
-          markers: updatedMarkers,
-          mapMarkers: mapMarkers,
-          isTracking: currentState.isTracking,
-        ));
+        emit(
+          LocationLoaded(
+            markers: updatedMarkers,
+            mapMarkers: mapMarkers,
+            isTracking: currentState.isTracking,
+          ),
+        );
       } else {
         // No address found, restore previous state
         emit(currentState);

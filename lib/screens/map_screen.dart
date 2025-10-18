@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../cubit/location_cubit.dart';
 import '../cubit/location_state.dart';
 import '../widgets/confirmation_dialog.dart';
@@ -100,7 +101,8 @@ class _MapScreenState extends State<MapScreen> {
                   child: TrackingControlCard(
                     isTracking: loadedState.isTracking,
                     markerCount: loadedState.markers.length,
-                    onToggleTracking: () => _toggleTracking(context, loadedState.isTracking),
+                    onToggleTracking: () =>
+                        _toggleTracking(context, loadedState.isTracking),
                   ),
                 ),
               ],
@@ -115,17 +117,17 @@ class _MapScreenState extends State<MapScreen> {
 
   void _toggleTracking(BuildContext context, bool isCurrentlyTracking) {
     final cubit = context.read<LocationCubit>();
-    
+
     if (isCurrentlyTracking) {
       cubit.stopTracking();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Konum takibi durduruldu')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Konum takibi durduruldu')));
     } else {
       cubit.startTracking();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Konum takibi başlatıldı')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Konum takibi başlatıldı')));
     }
   }
 
@@ -143,9 +145,9 @@ class _MapScreenState extends State<MapScreen> {
 
     if (confirmed == true && mounted) {
       context.read<LocationCubit>().resetRoute();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Rota sıfırlandı')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Rota sıfırlandı')));
     }
   }
 
