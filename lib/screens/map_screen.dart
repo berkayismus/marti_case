@@ -4,6 +4,10 @@ import 'package:geocoding/geocoding.dart';
 import '../models/location_marker.dart';
 import '../services/location_service.dart';
 import '../services/storage_service.dart';
+import '../widgets/custom_app_bar.dart';
+import '../widgets/tracking_control_card.dart';
+import '../widgets/location_info_dialog.dart';
+import '../widgets/confirmation_dialog.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -116,33 +120,10 @@ class _MapScreenState extends State<MapScreen> {
     // Show dialog immediately with loading state
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Konum ${index + 1}'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Enlem: ${marker.latitude.toStringAsFixed(6)}'),
-            Text('Boylam: ${marker.longitude.toStringAsFixed(6)}'),
-            const SizedBox(height: 8),
-            Text('Tarih: ${_formatDateTime(marker.timestamp)}'),
-            const SizedBox(height: 12),
-            const Divider(),
-            const SizedBox(height: 8),
-            Text(
-              'Adres:',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(address),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Kapat'),
-          ),
-        ],
+      builder: (context) => LocationInfoDialog(
+        marker: marker,
+        index: index,
+        address: address,
       ),
     );
     
@@ -174,10 +155,6 @@ class _MapScreenState extends State<MapScreen> {
         address = 'Adres bilgisi alınamadı';
       }
     }
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
   Future<void> _toggleTracking() async {
@@ -218,19 +195,12 @@ class _MapScreenState extends State<MapScreen> {
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Rotayı Sıfırla'),
-        content: const Text('Tüm kayıtlı konumlar silinecek. Emin misiniz?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('İptal'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Sıfırla', style: TextStyle(color: Colors.red)),
-          ),
-        ],
+      builder: (context) => const ConfirmationDialog(
+        title: 'Rotayı Sıfırla',
+        content: 'Tüm kayıtlı konumlar silinecek. Emin misiniz?',
+        confirmText: 'Sıfırla',
+        cancelText: 'İptal',
+        confirmColor: Colors.red,
       ),
     );
     
@@ -266,16 +236,9 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Marti Case - Konum Takibi'),
-        backgroundColor: Colors.orange,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _resetRoute,
-            tooltip: 'Rotayı Sıfırla',
-          ),
-        ],
+      appBar: CustomAppBar(
+        title: 'Marti Case - Konum Takibi',
+        onResetPressed: _resetRoute,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -294,36 +257,10 @@ class _MapScreenState extends State<MapScreen> {
                   bottom: 16,
                   left: 16,
                   right: 16,
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Toplam Konum: ${_locationService.markers.length}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              onPressed: _toggleTracking,
-                              icon: Icon(_isTracking ? Icons.stop : Icons.play_arrow),
-                              label: Text(_isTracking ? 'Takibi Durdur' : 'Takibi Başlat'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: _isTracking ? Colors.red : Colors.green,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  child: TrackingControlCard(
+                    isTracking: _isTracking,
+                    markerCount: _locationService.markers.length,
+                    onToggleTracking: _toggleTracking,
                   ),
                 ),
               ],

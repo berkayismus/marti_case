@@ -62,8 +62,15 @@ lib/
 ├── services/
 │   ├── location_service.dart         # Konum takip servisi
 │   └── storage_service.dart          # Veri saklama servisi
-└── screens/
-    └── map_screen.dart               # Harita ekranı ve UI
+├── screens/
+│   └── map_screen.dart               # Harita ekranı ve UI
+├── widgets/                           # Reusable widget'lar
+│   ├── custom_app_bar.dart           # Özel AppBar widget'ı
+│   ├── tracking_control_card.dart    # Takip kontrol kartı
+│   ├── location_info_dialog.dart     # Konum bilgi dialog'u
+│   └── confirmation_dialog.dart      # Onay dialog'u
+└── utils/
+    └── date_formatter.dart           # Tarih formatlama utility
 ```
 
 ## 🎯 Özellik Detayları
@@ -78,6 +85,12 @@ lib/
 - `SharedPreferences` ile lokal depolama
 - JSON serializasyon/deserializasyon
 - Uygulama yeniden başlatıldığında otomatik veri yükleme
+
+### Reusable Widget'lar
+- **CustomAppBar**: Özelleştirilebilir app bar
+- **TrackingControlCard**: Takip kontrolü için card widget
+- **LocationInfoDialog**: Konum detaylarını gösteren dialog
+- **ConfirmationDialog**: Genel amaçlı onay dialog'u
 
 ### Kullanıcı Arayüzü
 - Google Maps entegrasyonu
