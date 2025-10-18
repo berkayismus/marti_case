@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marti_case/core/injection.dart';
 import 'package:marti_case/cubit/location_cubit.dart';
 
 class BlocProviders extends StatelessWidget {
@@ -11,7 +12,7 @@ class BlocProviders extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => LocationCubit()..initialize()),
+        BlocProvider(create: (context) => getIt<LocationCubit>()..initialize()),
       ],
       child: child,
     );

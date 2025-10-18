@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:injectable/injectable.dart';
 import '../models/location_marker.dart';
 
+@lazySingleton
 class LocationService {
   StreamSubscription<Position>? _positionStreamSubscription;
   Position? _lastPosition;

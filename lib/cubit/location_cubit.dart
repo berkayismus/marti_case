@@ -1,22 +1,20 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:injectable/injectable.dart';
 
 import '../models/location_marker.dart';
 import '../services/location_service.dart';
 import '../services/storage_service.dart';
 import 'location_state.dart';
 
+@injectable
 class LocationCubit extends Cubit<LocationState> {
   final LocationService _locationService;
   final StorageService _storageService;
 
-  LocationCubit({
-    LocationService? locationService,
-    StorageService? storageService,
-  }) : _locationService = locationService ?? LocationService(),
-       _storageService = storageService ?? StorageService(),
-       super(const LocationInitial());
+  LocationCubit(this._locationService, this._storageService)
+    : super(const LocationInitial());
 
   Future<void> initialize() async {
     emit(const LocationLoading());
