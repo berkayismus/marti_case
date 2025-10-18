@@ -16,6 +16,9 @@ class LocationService {
   // Distance threshold in meters
   static const double distanceThreshold = 100.0;
 
+  // Check if tracking is active
+  bool get isTracking => _positionStreamSubscription != null;
+
   // Check and request location permissions
   Future<bool> requestLocationPermission() async {
     // Check if location service is enabled
@@ -125,9 +128,6 @@ class LocationService {
     _positionStreamSubscription?.cancel();
     _positionStreamSubscription = null;
   }
-
-  // Check if tracking is active
-  bool get isTracking => _positionStreamSubscription != null;
 
   // Get all markers
   List<LocationMarker> get markers => List.unmodifiable(_markers);

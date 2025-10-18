@@ -36,7 +36,7 @@ class LocationCubit extends Cubit<LocationState> {
         LocationLoaded(
           markers: savedMarkers,
           mapMarkers: mapMarkers,
-          isTracking: false,
+          isTracking: _locationService.isTracking,
         ),
       );
     } catch (e) {
@@ -79,6 +79,7 @@ class LocationCubit extends Cubit<LocationState> {
       currentState.copyWith(
         markers: List.from(_locationService.markers),
         mapMarkers: mapMarkers,
+        isTracking: _locationService.isTracking, // Get actual tracking state from service
       ),
     );
   }
@@ -87,18 +88,23 @@ class LocationCubit extends Cubit<LocationState> {
     final currentState = state;
     if (currentState is! LocationLoaded) return;
 
+    // First, update state to show tracking is active
+    emit(currentState.copyWith(isTracking: true));
+
     try {
       await _locationService.startTracking();
-      emit(currentState.copyWith(isTracking: true));
     } catch (e) {
+      // Revert tracking state on error
+      emit(currentState.copyWith(isTracking: false));
+      
       if (e.toString().contains('permission')) {
         emit(const LocationPermissionDenied());
         // Restore previous state
-        emit(currentState);
+        emit(currentState.copyWith(isTracking: false));
       } else {
         emit(LocationError('Takip başlatılamadı: $e'));
         // Restore previous state
-        emit(currentState);
+        emit(currentState.copyWith(isTracking: false));
       }
     }
   }
