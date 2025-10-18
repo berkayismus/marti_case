@@ -54,13 +54,15 @@ class LocationService {
     // Get current position first
     try {
       _lastPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
       
       // Add first marker
       _addMarker(_lastPosition!);
     } catch (e) {
-      print('Error getting current position: $e');
+      // Silently handle error for MVP
     }
 
     // Configure location settings for background tracking

@@ -199,13 +199,17 @@ class _MapScreenState extends State<MapScreen> {
           _isTracking = true;
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Konum takibi başlatıldı')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Konum takibi başlatıldı')),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Hata: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Hata: $e')),
+          );
+        }
       }
     }
   }
@@ -245,9 +249,11 @@ class _MapScreenState extends State<MapScreen> {
         _isTracking = false;
       });
       
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Rota sıfırlandı')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Rota sıfırlandı')),
+        );
+      }
     }
   }
 
