@@ -17,9 +17,10 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  // Istanbul center (Taksim Square)
   static const CameraPosition _initialPosition = CameraPosition(
     target: LatLng(41.0082, 28.9784),
-    zoom: 14,
+    zoom: 18,
   );
 
   @override
