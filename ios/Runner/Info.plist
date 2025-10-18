@@ -45,5 +45,15 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Bu uygulama konumunuzu harita üzerinde göstermek için konum izni gerektiriyor.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Bu uygulama arka planda da konumunuzu takip edebilmek için konum izni gerektiriyor.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Bu uygulama arka planda konumunuzu takip edebilmek için konum izni gerektiriyor.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 </dict>
 </plist>
