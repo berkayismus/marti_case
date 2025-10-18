@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'screens/map_screen.dart';
 
 void main() => runApp(const MyApp());
@@ -11,10 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Marti Case - Konum Takibi',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(primarySwatch: Colors.orange, useMaterial3: true),
       home: const MapScreen(),
     );
   }

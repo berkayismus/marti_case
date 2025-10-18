@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../models/location_marker.dart';
 
 class StorageService {
@@ -17,7 +19,7 @@ class StorageService {
   Future<List<LocationMarker>> loadMarkers() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_markersKey);
-    
+
     if (jsonString == null) {
       return [];
     }

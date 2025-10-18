@@ -1,16 +1,18 @@
 import 'dart:async';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 import '../models/location_marker.dart';
 
 class LocationService {
   StreamSubscription<Position>? _positionStreamSubscription;
   Position? _lastPosition;
   final List<LocationMarker> _markers = [];
-  
+
   // Callback when new marker is added
   Function(LocationMarker)? onMarkerAdded;
-  
+
   // Distance threshold in meters
   static const double distanceThreshold = 100.0;
 
@@ -24,7 +26,7 @@ class LocationService {
 
     // Check permission status
     LocationPermission permission = await Geolocator.checkPermission();
-    
+
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
@@ -58,7 +60,7 @@ class LocationService {
           accuracy: LocationAccuracy.high,
         ),
       );
-      
+
       // Add first marker
       _addMarker(_lastPosition!);
     } catch (e) {
@@ -68,15 +70,17 @@ class LocationService {
     // Configure location settings for background tracking
     const LocationSettings locationSettings = LocationSettings(
       accuracy: LocationAccuracy.high,
-      distanceFilter: 10, // Update every 10 meters to not miss the 100m threshold
+      distanceFilter:
+          10, // Update every 10 meters to not miss the 100m threshold
     );
 
     // Start listening to position changes
-    _positionStreamSubscription = Geolocator.getPositionStream(
-      locationSettings: locationSettings,
-    ).listen((Position position) {
-      _handlePositionUpdate(position);
-    });
+    _positionStreamSubscription =
+        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+          (Position position) {
+            _handlePositionUpdate(position);
+          },
+        );
   }
 
   // Handle position updates
@@ -109,9 +113,9 @@ class LocationService {
       longitude: position.longitude,
       timestamp: DateTime.now(),
     );
-    
+
     _markers.add(marker);
-    
+
     // Notify listener
     if (onMarkerAdded != null) {
       onMarkerAdded!(marker);
@@ -134,7 +138,7 @@ class LocationService {
   void loadMarkers(List<LocationMarker> markers) {
     _markers.clear();
     _markers.addAll(markers);
-    
+
     // Set last position from last marker
     if (markers.isNotEmpty) {
       final lastMarker = markers.last;
