@@ -137,16 +137,23 @@ class LocationCubit extends Cubit<LocationState> {
 
     final marker = markers[index];
 
-    // If address already loaded, no need to fetch again
-    if (marker.address != null) return;
-
-    // Emit loading state
+    // Always emit MarkerAddressLoading to show dialog
     emit(MarkerAddressLoading(
       markerIndex: index,
       markers: currentState.markers,
       mapMarkers: currentState.mapMarkers,
       isTracking: currentState.isTracking,
     ));
+
+    // If address already loaded, just re-emit loaded state
+    if (marker.address != null) {
+      emit(LocationLoaded(
+        markers: currentState.markers,
+        mapMarkers: currentState.mapMarkers,
+        isTracking: currentState.isTracking,
+      ));
+      return;
+    }
 
     try {
       // Fetch address

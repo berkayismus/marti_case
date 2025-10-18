@@ -5,6 +5,7 @@ import '../cubit/location_cubit.dart';
 import '../cubit/location_state.dart';
 import '../widgets/confirmation_dialog.dart';
 import '../widgets/custom_app_bar.dart';
+import '../widgets/location_info_dialog.dart';
 import '../widgets/tracking_control_card.dart';
 
 class MapScreen extends StatefulWidget {
@@ -43,6 +44,10 @@ class _MapScreenState extends State<MapScreen> {
                 backgroundColor: Colors.orange,
               ),
             );
+          } else if (state is MarkerAddressLoading) {
+            // Show dialog when marker is tapped
+            final marker = state.markers[state.markerIndex];
+            _showAddressDialog(context, marker, state.markerIndex);
           }
         },
         builder: (context, state) {
@@ -142,5 +147,16 @@ class _MapScreenState extends State<MapScreen> {
         const SnackBar(content: Text('Rota sıfırlandı')),
       );
     }
+  }
+
+  void _showAddressDialog(BuildContext context, dynamic marker, int index) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => LocationInfoDialog(
+        marker: marker,
+        index: index,
+        address: marker.address,
+      ),
+    );
   }
 }
