@@ -1,6 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
 
 import '../models/location_marker.dart';
@@ -8,13 +6,16 @@ import '../services/location_service.dart';
 import '../services/storage_service.dart';
 import 'location_state.dart';
 
-@injectable
+@singleton
 class LocationCubit extends Cubit<LocationState> {
   final LocationService _locationService;
   final StorageService _storageService;
+  
+  // Callback for marker updates to notify MapCubit
+  Function(List<LocationMarker>)? onMarkersUpdated;
 
   LocationCubit(this._locationService, this._storageService)
-    : super(const LocationInitial());
+      : super(const LocationInitial());
 
   Future<void> initialize() async {
     emit(const LocationLoading());
@@ -29,59 +30,39 @@ class LocationCubit extends Cubit<LocationState> {
         _onNewMarkerAdded(marker);
       };
 
-      // Create initial map markers
-      final mapMarkers = _createMapMarkers(savedMarkers);
-
       emit(
         LocationLoaded(
           markers: savedMarkers,
-          mapMarkers: mapMarkers,
           isTracking: _locationService.isTracking,
         ),
       );
+      
+      // Notify MapCubit
+      onMarkersUpdated?.call(savedMarkers);
     } catch (e) {
       emit(LocationError('Başlatma hatası: $e'));
     }
-  }
-
-  Set<Marker> _createMapMarkers(List<LocationMarker> locationMarkers) {
-    final markers = <Marker>{};
-
-    for (int i = 0; i < locationMarkers.length; i++) {
-      final locMarker = locationMarkers[i];
-      markers.add(
-        Marker(
-          markerId: MarkerId('marker_$i'),
-          position: LatLng(locMarker.latitude, locMarker.longitude),
-          infoWindow: InfoWindow(
-            title: 'Konum ${i + 1}',
-            snippet: 'Dokunarak adres bilgisini görün',
-          ),
-          onTap: () => loadMarkerAddress(i),
-        ),
-      );
-    }
-
-    return markers;
   }
 
   Future<void> _onNewMarkerAdded(LocationMarker marker) async {
     final currentState = state;
     if (currentState is! LocationLoaded) return;
 
+    print('🎯 LocationCubit: New marker added - Total markers: ${_locationService.markers.length}');
+
     // Save markers
     await _storageService.saveMarkers(_locationService.markers);
-
-    // Update map markers
-    final mapMarkers = _createMapMarkers(_locationService.markers);
 
     emit(
       currentState.copyWith(
         markers: List.from(_locationService.markers),
-        mapMarkers: mapMarkers,
-        isTracking: _locationService.isTracking, // Get actual tracking state from service
+        isTracking: _locationService.isTracking,
       ),
     );
+    
+    // Notify MapCubit
+    print('📢 LocationCubit: Notifying MapCubit with ${_locationService.markers.length} markers');
+    onMarkersUpdated?.call(List.from(_locationService.markers));
   }
 
   Future<void> startTracking() async {
@@ -130,81 +111,10 @@ class LocationCubit extends Cubit<LocationState> {
     _locationService.clearMarkers();
     await _storageService.clearMarkers();
 
-    emit(const LocationLoaded(markers: [], mapMarkers: {}, isTracking: false));
-  }
-
-  Future<void> loadMarkerAddress(int index) async {
-    final currentState = state;
-    if (currentState is! LocationLoaded) return;
-
-    final markers = currentState.markers;
-    if (index >= markers.length) return;
-
-    final marker = markers[index];
-
-    // Always emit MarkerAddressLoading to show dialog
-    emit(
-      MarkerAddressLoading(
-        markerIndex: index,
-        markers: currentState.markers,
-        mapMarkers: currentState.mapMarkers,
-        isTracking: currentState.isTracking,
-      ),
-    );
-
-    // If address already loaded, just re-emit loaded state
-    if (marker.address != null) {
-      emit(
-        LocationLoaded(
-          markers: currentState.markers,
-          mapMarkers: currentState.mapMarkers,
-          isTracking: currentState.isTracking,
-        ),
-      );
-      return;
-    }
-
-    try {
-      // Fetch address
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        marker.latitude,
-        marker.longitude,
-      );
-
-      if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        final address =
-            '${place.street ?? ''}, ${place.subLocality ?? ''}, ${place.locality ?? ''}, ${place.country ?? ''}';
-
-        // Update marker with address
-        final updatedMarker = marker.copyWith(address: address);
-        final updatedMarkers = List<LocationMarker>.from(markers);
-        updatedMarkers[index] = updatedMarker;
-
-        // Update service markers
-        _locationService.markers[index] = updatedMarker;
-
-        // Save to storage
-        await _storageService.saveMarkers(updatedMarkers);
-
-        // Update map markers
-        final mapMarkers = _createMapMarkers(updatedMarkers);
-
-        emit(
-          LocationLoaded(
-            markers: updatedMarkers,
-            mapMarkers: mapMarkers,
-            isTracking: currentState.isTracking,
-          ),
-        );
-      } else {
-        // No address found, restore previous state
-        emit(currentState);
-      }
-    } catch (e) {
-      // Error fetching address, restore previous state
-      emit(currentState);
-    }
+    emit(const LocationLoaded(markers: [], isTracking: false));
+    
+    // Notify MapCubit
+    onMarkersUpdated?.call([]);
   }
 
   @override

@@ -4,6 +4,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../cubit/location_cubit.dart';
 import '../cubit/location_state.dart';
+import '../cubit/map_cubit.dart';
+import '../cubit/map_state.dart';
 import '../widgets/confirmation_dialog.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/location_info_dialog.dart';
@@ -30,41 +32,20 @@ class _MapScreenState extends State<MapScreen> {
         title: 'Marti Case - Konum Takibi',
         onResetPressed: _showResetConfirmation,
       ),
-      body: BlocConsumer<LocationCubit, LocationState>(
-        listener: (context, state) {
-          if (state is LocationError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
-          } else if (state is LocationPermissionDenied) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Konum izni reddedildi'),
-                backgroundColor: Colors.orange,
-              ),
-            );
-          } else if (state is MarkerAddressLoading) {
-            // Show dialog when marker is tapped
-            final marker = state.markers[state.markerIndex];
-            _showAddressDialog(context, marker, state.markerIndex);
-          }
-        },
-        builder: (context, state) {
-          if (state is LocationInitial || state is LocationLoading) {
+      body: BlocBuilder<LocationCubit, LocationState>(
+        builder: (context, locationState) {
+          if (locationState is LocationInitial || locationState is LocationLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (state is LocationError) {
+          if (locationState is LocationError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
-                  Text(state.message),
+                  Text(locationState.message),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => context.read<LocationCubit>().initialize(),
@@ -75,38 +56,70 @@ class _MapScreenState extends State<MapScreen> {
             );
           }
 
-          if (state is LocationLoaded || state is MarkerAddressLoading) {
-            final loadedState = state as LocationLoaded;
-            return Stack(
-              children: [
-                GoogleMap(
-                  initialCameraPosition: _initialPosition,
-                  markers: loadedState.mapMarkers,
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
-                  onMapCreated: (controller) {
-                    if (loadedState.markers.isNotEmpty) {
-                      final lastMarker = loadedState.markers.last;
-                      controller.animateCamera(
-                        CameraUpdate.newLatLng(
-                          LatLng(lastMarker.latitude, lastMarker.longitude),
-                        ),
-                      );
-                    }
-                  },
-                ),
-                Positioned(
-                  bottom: 16,
-                  left: 16,
-                  right: 16,
-                  child: TrackingControlCard(
-                    isTracking: loadedState.isTracking,
-                    markerCount: loadedState.markers.length,
-                    onToggleTracking: () =>
-                        _toggleTracking(context, loadedState.isTracking),
+          if (locationState is LocationPermissionDenied) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.location_off, size: 64, color: Colors.orange),
+                  const SizedBox(height: 16),
+                  const Text('Konum izni reddedildi'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.read<LocationCubit>().initialize(),
+                    child: const Text('Tekrar Dene'),
                   ),
-                ),
-              ],
+                ],
+              ),
+            );
+          }
+
+          if (locationState is LocationLoaded) {
+            return BlocConsumer<MapCubit, MapState>(
+              listener: (context, mapState) {
+                if (mapState is MarkerAddressLoading) {
+                  // Show dialog when marker is tapped
+                  final marker = mapState.markers[mapState.markerIndex];
+                  _showAddressDialog(context, marker, mapState.markerIndex);
+                }
+              },
+              builder: (context, mapState) {
+                if (mapState is! MapLoaded) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                return Stack(
+                  children: [
+                    GoogleMap(
+                      initialCameraPosition: _initialPosition,
+                      markers: mapState.mapMarkers,
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: true,
+                      onMapCreated: (controller) {
+                        if (mapState.markers.isNotEmpty) {
+                          final lastMarker = mapState.markers.last;
+                          controller.animateCamera(
+                            CameraUpdate.newLatLng(
+                              LatLng(lastMarker.latitude, lastMarker.longitude),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    Positioned(
+                      bottom: 16,
+                      left: 16,
+                      right: 16,
+                      child: TrackingControlCard(
+                        isTracking: locationState.isTracking,
+                        markerCount: locationState.markers.length,
+                        onToggleTracking: () =>
+                            _toggleTracking(context, locationState.isTracking),
+                      ),
+                    ),
+                  ],
+                );
+              },
             );
           }
 

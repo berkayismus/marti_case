@@ -116,10 +116,14 @@ class LocationService {
     );
     
     _markers.add(marker);
+    print('📍 LocationService: Added marker at (${position.latitude}, ${position.longitude}), Total: ${_markers.length}');
     
     // Notify listener
     if (onMarkerAdded != null) {
+      print('📍 LocationService: Notifying onMarkerAdded callback');
       onMarkerAdded!(marker);
+    } else {
+      print('⚠️ LocationService: No onMarkerAdded callback registered!');
     }
   }
 
@@ -159,6 +163,13 @@ class LocationService {
   void clearMarkers() {
     _markers.clear();
     _lastPosition = null;
+  }
+
+  // Update a specific marker
+  void updateMarker(int index, LocationMarker marker) {
+    if (index >= 0 && index < _markers.length) {
+      _markers[index] = marker;
+    }
   }
 
   // Dispose resources
