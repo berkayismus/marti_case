@@ -1,8 +1,42 @@
-# Marti Case - Konum Takip Uygulaması
+# Ma## 📸 Ekran Görüntüleri
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/screenshot_1.png" alt="Harita Görünümü" width="300"/>
+      <br />
+      <sub><b>Harita ve 3 Marker</b></sub>
+    </td>
+    <td align="center">
+      <img src="screenshots/screenshot_2.png" alt="Konum Detayı" width="300"/>
+      <br />
+      <sub><b>Konum Detay Dialogu</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <sub>• Toplam 3 konum marker'ı<br/>• "Takibi Durdur" butonu aktif<br/>• Google Maps entegrasyonu</sub>
+    </td>
+    <td align="center">
+      <sub>• Koordinat bilgisi<br/>• Tarih ve saat<br/>• Adres yükleme durumu</sub>
+    </td>
+  </tr>
+</table>
+
+> **💡 İpucu:** Her 100 metrelik harekette otomatik olarak yeni marker eklenir. - Konum Takip Uygulaması
 
 Flutter ile geliştirilmiş, kullanıcının konumunu izleyen ve her 100 metrelik değişimde haritaya marker ekleyen bir mobil uygulama.
 
-## 📱 Özellikler
+## � Ekran Görüntüleri
+
+<div align="center">
+  <img src="screenshots/screenshot_1.png" alt="Harita ve Marker Görünümü" width="250"/>
+  <img src="screenshots/screenshot_2.png" alt="Konum Detay Dialog" width="250"/>
+</div>
+
+> **Not:** Uygulama 3 marker ile çalışıyor, her 100 metrede otomatik marker ekleniyor.
+
+## �📱 Özellikler
 
 - ✅ **Konum Takibi**: Kullanıcının konumunu gerçek zamanlı olarak izler
 - ✅ **Akıllı Marker Ekleme**: Her 100 metre değişimde otomatik marker eklenir
