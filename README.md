@@ -1,4 +1,4 @@
-# Ma## 📸 Ekran Görüntüleri
+# Martı 📸 Ekran Görüntüleri
 
 <table>
   <tr>
