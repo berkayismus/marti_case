@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:injectable/injectable.dart';
 import '../models/location_marker.dart';
 
+@lazySingleton
 class StorageService {
   static const String _markersKey = 'location_markers';
 

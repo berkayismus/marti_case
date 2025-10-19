@@ -1,19 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:marti_case/app.dart';
+import 'package:marti_case/core/injection.dart';
 
-import 'screens/map_screen.dart';
-
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Marti Case - Konum Takibi',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.orange, useMaterial3: true),
-      home: const MapScreen(),
-    );
-  }
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  configureDependencies();
+  runApp(const MyApp());
 }

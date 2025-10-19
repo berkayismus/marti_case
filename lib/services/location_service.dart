@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import 'package:injectable/injectable.dart';
 import '../models/location_marker.dart';
 
+@lazySingleton
 class LocationService {
   StreamSubscription<Position>? _positionStreamSubscription;
   Position? _lastPosition;
@@ -15,6 +16,9 @@ class LocationService {
 
   // Distance threshold in meters
   static const double distanceThreshold = 100.0;
+
+  // Check if tracking is active
+  bool get isTracking => _positionStreamSubscription != null;
 
   // Check and request location permissions
   Future<bool> requestLocationPermission() async {
@@ -115,10 +119,14 @@ class LocationService {
     );
 
     _markers.add(marker);
-
+    print('📍 LocationService: Added marker at (${position.latitude}, ${position.longitude}), Total: ${_markers.length}');
+    
     // Notify listener
     if (onMarkerAdded != null) {
+      print('📍 LocationService: Notifying onMarkerAdded callback');
       onMarkerAdded!(marker);
+    } else {
+      print('⚠️ LocationService: No onMarkerAdded callback registered!');
     }
   }
 
@@ -127,9 +135,6 @@ class LocationService {
     _positionStreamSubscription?.cancel();
     _positionStreamSubscription = null;
   }
-
-  // Check if tracking is active
-  bool get isTracking => _positionStreamSubscription != null;
 
   // Get all markers
   List<LocationMarker> get markers => List.unmodifiable(_markers);
@@ -161,6 +166,13 @@ class LocationService {
   void clearMarkers() {
     _markers.clear();
     _lastPosition = null;
+  }
+
+  // Update a specific marker
+  void updateMarker(int index, LocationMarker marker) {
+    if (index >= 0 && index < _markers.length) {
+      _markers[index] = marker;
+    }
   }
 
   // Dispose resources

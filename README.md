@@ -16,11 +16,13 @@ Flutter ile geliştirilmiş, kullanıcının konumunu izleyen ve her 100 metreli
 ## 🛠️ Teknolojiler
 
 - **Flutter SDK**: 3.8.1+
-- **Google Maps Flutter**: Harita görüntüleme
-- **Geolocator**: Konum takibi
-- **Geocoding**: Adres bilgisi alma
-- **Permission Handler**: İzin yönetimi
-- **SharedPreferences**: Veri kalıcılığı
+- **Google Maps Flutter**: ^2.13.1 - Harita görüntüleme
+- **Geolocator**: ^14.0.2 - Konum takibi
+- **Geocoding**: ^4.0.0 - Adres bilgisi alma
+- **Permission Handler**: ^12.0.1 - İzin yönetimi
+- **SharedPreferences**: ^2.5.3 - Veri kalıcılığı
+- **Flutter Bloc**: ^9.1.1 - State management (Cubit)
+- **Equatable**: ^2.0.7 - Value equality
 
 ## 📦 Kurulum
 
@@ -57,13 +59,25 @@ flutter run
 ```
 lib/
 ├── main.dart                          # Ana uygulama giriş noktası
+├── core/                              # Core/Temel yapılandırmalar
+│   └── app_theme.dart                # Uygulama teması (renk, stil vb.)
+├── cubit/                             # State management (Cubit)
+│   ├── location_cubit.dart           # Location state business logic
+│   └── location_state.dart           # Location state definitions
 ├── models/
 │   └── location_marker.dart          # Konum marker model sınıfı
 ├── services/
 │   ├── location_service.dart         # Konum takip servisi
 │   └── storage_service.dart          # Veri saklama servisi
-└── screens/
-    └── map_screen.dart               # Harita ekranı ve UI
+├── screens/
+│   └── map_screen.dart               # Harita ekranı ve UI
+├── widgets/                           # Reusable widget'lar
+│   ├── custom_app_bar.dart           # Özel AppBar widget'ı
+│   ├── tracking_control_card.dart    # Takip kontrol kartı
+│   ├── location_info_dialog.dart     # Konum bilgi dialog'u
+│   └── confirmation_dialog.dart      # Onay dialog'u
+└── utils/
+    └── date_formatter.dart           # Tarih formatlama utility
 ```
 
 ## 🎯 Özellik Detayları
@@ -78,6 +92,31 @@ lib/
 - `SharedPreferences` ile lokal depolama
 - JSON serializasyon/deserializasyon
 - Uygulama yeniden başlatıldığında otomatik veri yükleme
+
+### Reusable Widget'lar
+- **CustomAppBar**: Özelleştirilebilir app bar
+- **TrackingControlCard**: Takip kontrolü için card widget
+- **LocationInfoDialog**: Konum detaylarını gösteren dialog
+- **ConfirmationDialog**: Genel amaçlı onay dialog'u
+
+### State Management (Cubit)
+- **LocationCubit**: İş mantığını yöneten Cubit sınıfı
+- **LocationState**: Uygulama durumlarını tanımlayan state sınıfları
+  - LocationInitial: Başlangıç durumu
+  - LocationLoading: Yükleme durumu
+  - LocationLoaded: Veri yüklenmiş durumu
+  - LocationError: Hata durumu
+  - LocationPermissionDenied: İzin reddedildi durumu
+  - MarkerAddressLoading: Adres yükleniyor durumu
+- Reactive UI: BlocConsumer ile otomatik UI güncellemeleri
+- Separation of Concerns: İş mantığı ve UI'ın ayrılması
+
+### Tema Yönetimi
+- **AppTheme**: Merkezi tema yönetimi
+- Yeşil renk teması (primarySwatch: Colors.green)
+- Material Design 3 desteği
+- Tutarlı AppBar stil ve renklendirme
+- Kolay özelleştirilebilir tema yapısı
 
 ### Kullanıcı Arayüzü
 - Google Maps entegrasyonu
